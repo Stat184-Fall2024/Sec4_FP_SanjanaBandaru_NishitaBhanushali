@@ -8,4 +8,11 @@ majorsRaw <- read.table(
   sep = ","
 )
 
-View(majorsRaw)
+majorsCleaned <- majorsRaw %>%
+  rename(
+    ## new name = old name
+    junk = Major_code
+  ) %>% 
+  dplyr:: select(-junk) 
+
+View(majorsCleaned)
