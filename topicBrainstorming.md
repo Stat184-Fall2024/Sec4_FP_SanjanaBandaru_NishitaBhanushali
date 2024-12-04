@@ -7,3 +7,10 @@
 - College Majors by FiveThirtyEight: https://github.com/fivethirtyeight/data/tree/master/college-majors
 - Spotify Most Streamed Songs: https://www.kaggle.com/datasets/abdulszz/spotify-most-streamed-songs
 - Avengers by FiveThirtyEight: https://github.com/fivethirtyeight/data/tree/master/avengers
+
+
+Potential Research Questions:
+- Exploring the relationship between major, gender, and employment after graduation
+
+
+Is there a relationship between the genders of students and the majors that they chose, as well as their employment after graduation?
