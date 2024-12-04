@@ -14,3 +14,9 @@ Potential Research Questions:
 
 
 Is there a relationship between the genders of students and the majors that they chose, as well as their employment after graduation?
+
+Create a set of research questions:
+1. Is there a relatinship between the genders of students and the majors they chose?
+2. Is there a relationship between the majors that students choose and their employment after graduation?
+3. Is there a relationship between the genders of the students and their employment after graduation?
+4. Is there relatonship between all 3 factors?
