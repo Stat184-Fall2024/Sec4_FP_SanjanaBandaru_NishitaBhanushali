@@ -9,11 +9,31 @@
 - Avengers by FiveThirtyEight: https://github.com/fivethirtyeight/data/tree/master/avengers
 
 
+Plan:
+12/4 - Figure out Data
+For at home:
+- Sanjana - Data Wrangling
+- Jesa - Skeleton Quarto File
+- Nishita - Skeleton Quarto File
+
 Potential Research Questions:
-- Exploring the relationship between major, gender, and employment after graduation
+- Exploring the relationship between vote average, revenue, runtime
+- Filter by release date (only want movies from 11/21/2010-3/24/2015)
 
-
-Is there a relationship between the genders of students and the majors that they chose, as well as their employment after graduation?
+Filter with:
+- averageRating
+- production_countries
+- genres
+- title
+- release_date
+- revenue
+- runtime
+- status
+- budget
+- original language
+- production_companies
+- spoken_languages
+- numVotes
 
 Create a set of research questions:
 1. Is there a relatinship between the genders of students and the majors they chose?
