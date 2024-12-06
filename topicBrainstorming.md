@@ -36,7 +36,31 @@ Filter with:
 - numVotes
 
 Create a set of research questions:
-1. Is there a relatinship between the genders of students and the majors they chose?
-2. Is there a relationship between the majors that students choose and their employment after graduation?
-3. Is there a relationship between the genders of the students and their employment after graduation?
-4. Is there relatonship between all 3 factors?
+1. How does genre affect voting average?
+2. What's the relationship between revenue and voting average?
+3. How does runtime affect voting average?
+4. How does genre affect runtime?
+5. How does genre affect revenue?
+6. How does runtime affect revenue?
+7. What is the relationship between genre, revenue, runtime, and voting average.
+
+
+Coding Work Breakdown:
+- Data Wrangling - Sanjana
+- Visualizations
+  - Quantiative - Nishita
+  - Qualitiative + Summary Stats Table - Jesa
+  
+
+Writing Work Breakdown:
+- Introduction
+- Methodology
+- Quantitative EDA
+- Qualitative EDA
+- Results/Conclusion
+
+
+
+
+
+
