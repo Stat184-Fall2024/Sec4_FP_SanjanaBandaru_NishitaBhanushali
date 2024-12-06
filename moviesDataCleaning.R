@@ -11,8 +11,10 @@ moviesCleaned <- moviesRaw %>%
   ) %>%
   filter(original_language == "en") %>%
   dplyr:: select(-original_language) %>%
-  filter(grepl('201', release_date)) %>%
-  filter(status == "Released")
-
+  filter(grepl('20', release_date)) %>%
+  filter(status == "Released") %>%
+  filter(runtime != "0") %>%
+  filter(revenue != "0") %>%
+  filter(budget != "0")
 
 View(moviesCleaned)
