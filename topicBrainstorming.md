@@ -2,7 +2,7 @@
 - Microsoft Stock Data (2010-2024): https://www.kaggle.com/datasets/mhassansaboor/microsoft-stock-data-2010-2024
 - Animal Crossing villagers (Entire Series): https://www.kaggle.com/datasets/nookipedia/animal-crossing-series-villagers
 - Most Dangerous Countries for Women 2024: https://www.kaggle.com/datasets/arpitsinghaiml/most-dangerous-countries-for-women-2024
-- TMDB + IMDB Merged Movies Dataset: https://www.kaggle.com/datasets/ggtejas/tmdb-imdb-merged-movies-dataset
+- [TMDB + IMDB Merged Movies Dataset: https://www.kaggle.com/datasets/ggtejas/tmdb-imdb-merged-movies-dataset] - SELECTED
 - Bechdel by FiveThirtyEight: https://github.com/fivethirtyeight/data/tree/master/bechdel
 - College Majors by FiveThirtyEight: https://github.com/fivethirtyeight/data/tree/master/college-majors
 - Spotify Most Streamed Songs: https://www.kaggle.com/datasets/abdulszz/spotify-most-streamed-songs
@@ -38,18 +38,18 @@ Filter with:
 Create a set of research questions:
 1. How does genre affect voting average?
 2. What's the relationship between revenue and voting average?
-3. How does runtime affect voting average?
-4. How does genre affect runtime?
+3. How does run time affect voting average?
+4. How does genre affect run time?
 5. How does genre affect revenue?
-6. How does runtime affect revenue?
+6. How does run time affect revenue?
 7. What is the relationship between genre, revenue, runtime, and voting average.
 
 
 Coding Work Breakdown:
 - Data Wrangling - Sanjana
 - Visualizations
-  - Quantiative - Nishita
-  - Qualitiative + Summary Stats Table - Jesa
+  - Quantitative - Nishita
+  - Qualitative + Summary Stats Table - Jesa
   
 
 Writing Work Breakdown:
