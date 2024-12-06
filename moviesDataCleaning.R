@@ -7,14 +7,15 @@ moviesRaw <- read_csv(
 moviesCleaned <- moviesRaw %>%
   dplyr:: select(-id, -vote_average, -vote_count, -overview, -adult, 
   -backdrop_path, -homepage, -tconst, -poster_path, -tagline, -keywords, 
-  -directors, -writers, -cast, -original_title, -popularity, -spoken_languages
+  -directors, -writers, -cast, -original_title, -popularity
   ) %>%
-  filter(original_language == "en") %>%
-  dplyr:: select(-original_language) %>%
+  filter(grepl('English', spoken_languages)) %>%
+  dplyr:: select(-original_language, -spoken_languages) %>%
   filter(grepl('20', release_date)) %>%
   filter(status == "Released") %>%
   filter(runtime != "0") %>%
   filter(revenue != "0") %>%
-  filter(budget != "0")
+  filter(budget != "0") %>%
+  filter(!duplicated(title))
 
 View(moviesCleaned)
