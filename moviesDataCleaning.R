@@ -37,6 +37,31 @@ genresWrangled <- moviesCleaned %>%
     values_to = "genre"
   ) %>%
   drop_na() %>%
+  mutate(
+    genre = case_match(
+      .x = genre,
+      " Action" ~ "Action",
+      " Adventure" ~ "Adventure",
+      " Crime" ~ "Crime",
+      " Thriller" ~ "Thriller",
+      " Science Fiction" ~ "Science Fiction",
+      " Drama" ~ "Drama",
+      " Comedy" ~ "Comedy",
+      " TV Movie" ~ "TV Movie",
+      " Family" ~ "Family",
+      " Western" ~ "Western",
+      " Mystery" ~ "Mystery",
+      " Romance" ~ "Romance",
+      " History" ~ "History",
+      " War" ~ "War",
+      " Fantasy" ~ "Fantasy",
+      " Horror" ~ "Horror",
+      " Music" ~ "Music",
+      " Documentary" ~ "Documentary",
+      " Animation" ~ "Animation",
+      .default = genre
+    )
+  ) %>% 
  group_by(genre) %>%
   summarize(
     minRev = min(revenue),
