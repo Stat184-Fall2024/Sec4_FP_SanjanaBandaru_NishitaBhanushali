@@ -23,4 +23,25 @@ moviesCleaned <- moviesRaw %>%
   filter(!grepl('UFC', title)) %>%
   drop_na()
 
+genresWrangled <- moviesCleaned %>%
+  group_by(genres) %>%
+  summarize(
+    minRev = min(revenue),
+    Q1Rev = quantile(revenue, probs = 0.25),
+    medianRev = median(revenue),
+    Q3Rev = quantile(revenue, probs = 0.75),
+    maxRev = max(revenue),
+    minRating = min(averageRating),
+    Q1Rating = quantile(averageRating, probs = 0.25),
+    medianRating = median(averageRating),
+    Q3Rating = quantile(averageRating, probs = 0.75),
+    maxRating = max(averageRating),
+    minBudget = min(budget),
+    Q1Budget = quantile(budget, probs = 0.25),
+    medianBudget = median(budget),
+    Q3Budget = quantile(budget, probs = 0.75),
+    maxBudget = max(budget),
+    .groups = "drop"
+  )
+
 View(moviesCleaned)
