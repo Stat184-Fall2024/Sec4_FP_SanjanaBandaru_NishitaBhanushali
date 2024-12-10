@@ -36,13 +36,13 @@ Filter with:
 - numVotes
 
 Create a set of research questions:
-1. How does genre affect voting average?
-2. What's the relationship between revenue and voting average?
-3. How does run time affect voting average?
-4. How does genre affect run time?
-5. How does genre affect revenue?
-6. How does run time affect revenue?
-7. What is the relationship between genre, revenue, runtime, and voting average.
+1. How does genre affect voting average? - Qual
+2. What's the relationship between revenue and voting average? - Quant
+3. How does run time affect voting average? - Quant
+4. How does genre affect run time? - Qual
+5. How does genre affect revenue? - Qual
+6. How does run time affect revenue? - Quant
+7. What is the relationship between genre, revenue, runtime, and voting average. - Qual
 
 
 Coding Work Breakdown:
