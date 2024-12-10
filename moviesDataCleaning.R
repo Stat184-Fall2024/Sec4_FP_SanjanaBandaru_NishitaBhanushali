@@ -24,7 +24,20 @@ moviesCleaned <- moviesRaw %>%
   drop_na()
 
 genresWrangled <- moviesCleaned %>%
-  group_by(genres) %>%
+  separate_wider_delim(
+    cols = genres,
+    delim = ",",
+    names = c("Genre1", "Genre2", "Genre3", "Genre4", "Genre5", "Genre6",
+    "Genre7", "Genre8", "Genre9"),
+    too_few = "align_start"
+  ) %>%
+  pivot_longer(
+    cols = starts_with("Genre"),
+    names_to = "genreNumber",
+    values_to = "genre"
+  ) %>%
+  drop_na() %>%
+ group_by(genre) %>%
   summarize(
     minRev = min(revenue),
     Q1Rev = quantile(revenue, probs = 0.25),
@@ -41,7 +54,9 @@ genresWrangled <- moviesCleaned %>%
     medianBudget = median(budget),
     Q3Budget = quantile(budget, probs = 0.75),
     maxBudget = max(budget),
+    count = n(),
     .groups = "drop"
   )
+
 
 View(moviesCleaned)
