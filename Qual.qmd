@@ -1,0 +1,120 @@
+---
+title: "Qualitative Visualization"
+format: pdf
+editor: visual
+---
+
+## Qualitative Research Questions
+
+1.  How does genre affect voting average? - Qual
+2.  How does genre affect run time? - Qual
+3.  How does genre affect revenue? - Qual
+4.  What is the relationship between genre, revenue, runtime, and voting average. - Qual
+
+## Install and Load Packages
+
+```{r}
+install.packages("ggplot2")
+install.packages("janitor")
+install.packages("knitr")
+install.packages("kableExtra")
+install.packages("dplyr")
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("rvest")
+
+library(janitor)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(rvest)
+
+```
+
+## Read in Data
+
+```{r}
+moviesRaw <- read_csv(
+  file = "~/Desktop/STAT184/IMDBMovies.csv"
+)
+
+moviesCleaned <- moviesRaw %>%
+  dplyr:: select(-id, -vote_average, -vote_count, -overview, 
+  -backdrop_path, -homepage, -tconst, -poster_path, -tagline, -keywords, 
+  -directors, -writers, -cast, -original_title, -popularity
+  ) %>%
+  filter(adult == FALSE) %>%
+  filter(grepl('English', spoken_languages)) %>%
+  filter(original_language == "en") %>%
+  dplyr:: select(-original_language, -spoken_languages, -adult, -production_companies) %>%
+  filter(!grepl('19', release_date)) %>%
+  filter(status == "Released") %>%
+  filter(revenue > 1) %>%
+  filter(runtime >= 30 ) %>%
+  filter(budget >=  1000) %>%
+  filter(numVotes >=  1000) %>%
+  filter(!duplicated(title)) %>%
+  filter(!grepl('UFC', title)) %>%
+  drop_na() %>%
+  separate_wider_delim(
+    genres,
+    ",",
+    names = c("genre1", "genre2", "genre3"),
+    too_few = c("align_start"),
+    too_many = c("drop")
+  )
+View(moviesCleaned2)
+```
+
+## Summary Stats Table
+
+```{r}
+afFreq <- afIndiv %>% tabyl(Rank, Branch, Gender)
+afFreqF <- afFreq[["F"]] %>%
+  adorn_percentages("col") %>%
+  adorn_pct_formatting(digits = 1) %>%
+  adorn_ns %>%
+  adorn_title("combined", col_name = "Female Armed Forces Members")
+kable(afFreqF)
+
+
+kable(
+  diamondsStats,
+  col.names = c("Cut", "Count", "Minimum", "Q1", "Q2", "Median", "Q3", "Q4", "Maximum", "Mean", "SD")
+  )
+
+
+##Step 3
+penguinModel <- lm(
+  formula = body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm + sex + island,
+  data = penguinsClean
+)
+
+##Step 4
+kable(
+  penguinModel[["coefficients"]],
+  col.names = c("Coefficient", "Value")
+)
+
+```
+
+## Genre and Rating
+
+## Genre and Runtime
+
+## Genre and Revenue
+
+## All Variables
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
