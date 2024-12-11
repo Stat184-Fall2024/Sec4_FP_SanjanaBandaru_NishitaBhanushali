@@ -23,6 +23,7 @@ install.packages("tidyverse")
 install.packages("tidyr")
 install.packages("dplyr")
 install.packages("rvest")
+install.packages("esquisse")
 
 library(janitor)
 library(knitr)
@@ -32,7 +33,8 @@ library(dplyr)
 library(tidyverse)
 library(tidyr)
 library(rvest)
-
+library(plotly)
+library(esquisse)
 ```
 
 ## Read in Data
@@ -50,67 +52,193 @@ moviesCleaned <- moviesRaw %>%
   filter(adult == FALSE) %>%
   filter(grepl('English', spoken_languages)) %>%
   filter(original_language == "en") %>%
-  dplyr:: select(-original_language, -spoken_languages, -adult, -production_companies) %>%
+  dplyr:: select(-original_language, -spoken_languages, -adult) %>%
   filter(!grepl('19', release_date)) %>%
   filter(status == "Released") %>%
   filter(revenue > 1) %>%
   filter(runtime >= 30 ) %>%
-  filter(budget >=  1000) %>%
-  filter(numVotes >=  1000) %>%
+  filter(runtime <= 220) %>%
+  filter(budget >= 1000) %>%
+  filter(numVotes >= 1000) %>%
   filter(!duplicated(title)) %>%
   filter(!grepl('UFC', title)) %>%
-  drop_na() %>%
+  drop_na()
+
+genresWrangled <- moviesCleaned %>%
   separate_wider_delim(
-    genres,
-    ",",
-    names = c("genre1", "genre2", "genre3"),
-    too_few = c("align_start"),
-    too_many = c("drop")
+    cols = genres,
+    delim = ",",
+    names = c("Genre1", "Genre2", "Genre3", "Genre4", "Genre5", "Genre6",
+    "Genre7", "Genre8", "Genre9"),
+    too_few = "align_start"
+  ) %>%
+  pivot_longer(
+    cols = starts_with("Genre"),
+    names_to = "genreNumber",
+    values_to = "genre"
+  ) %>%
+  drop_na() %>%
+  mutate(
+    genre = case_match(
+      .x = genre,
+      " Action" ~ "Action",
+      " Adventure" ~ "Adventure",
+      " Crime" ~ "Crime",
+      " Thriller" ~ "Thriller",
+      " Science Fiction" ~ "Science Fiction",
+      " Drama" ~ "Drama",
+      " Comedy" ~ "Comedy",
+      " TV Movie" ~ "TV Movie",
+      " Family" ~ "Family",
+      " Western" ~ "Western",
+      " Mystery" ~ "Mystery",
+      " Romance" ~ "Romance",
+      " History" ~ "History",
+      " War" ~ "War",
+      " Fantasy" ~ "Fantasy",
+      " Horror" ~ "Horror",
+      " Music" ~ "Music",
+      " Documentary" ~ "Documentary",
+      " Animation" ~ "Animation",
+      .default = genre
+    )
+  ) %>% 
+ group_by(genre) %>%
+  summarize(
+    minRev = min(revenue),
+    Q1Rev = quantile(revenue, probs = 0.25),
+    medianRev = median(revenue),
+    Q3Rev = quantile(revenue, probs = 0.75),
+    maxRev = max(revenue),
+    avgRev = mean(revenue),
+    minRating = min(averageRating),
+    Q1Rating = quantile(averageRating, probs = 0.25),
+    medianRating = median(averageRating),
+    Q3Rating = quantile(averageRating, probs = 0.75),
+    maxRating = max(averageRating),
+    avgRating = mean(averageRating),
+    minRun = min(runtime),
+    Q1Run = quantile(runtime, probs = 0.25),
+    medianRun = median(runtime),
+    Q3Run = quantile(runtime, probs = 0.75),
+    maxRun = max(runtime),
+    avgRun = mean(runtime),
+    count = n(),
+    .groups = "drop"
   )
-View(moviesCleaned2)
-```
 
-## Summary Stats Table
-
-```{r}
-afFreq <- afIndiv %>% tabyl(Rank, Branch, Gender)
-afFreqF <- afFreq[["F"]] %>%
-  adorn_percentages("col") %>%
-  adorn_pct_formatting(digits = 1) %>%
-  adorn_ns %>%
-  adorn_title("combined", col_name = "Female Armed Forces Members")
-kable(afFreqF)
-
-
-kable(
-  diamondsStats,
-  col.names = c("Cut", "Count", "Minimum", "Q1", "Q2", "Median", "Q3", "Q4", "Maximum", "Mean", "SD")
-  )
-
-
-##Step 3
-penguinModel <- lm(
-  formula = body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm + sex + island,
-  data = penguinsClean
-)
-
-##Step 4
-kable(
-  penguinModel[["coefficients"]],
-  col.names = c("Coefficient", "Value")
-)
-
+View(moviesCleaned)
 ```
 
 ## Genre and Rating
 
+```{r}
+ggplot(genresWrangled) +
+  aes(x = genre, y = avgRating) +
+  geom_col(fill = "#4F834F") +
+  labs(
+    x = "Genre",
+    y = "Average Rating",
+    title = "Genre vs. Average Rating"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+```
+
 ## Genre and Runtime
+
+```{r}
+ggplot(genresWrangled) +
+  aes(x = genre, y = avgRun) +
+  geom_col(fill = "#4682B4") +
+  labs(
+    x = "Genre",
+    y = "Average Runtime",
+    title = "Genre vs. Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+```
 
 ## Genre and Revenue
 
-## All Variables
+```{r}
+ggplot(genresWrangled) +
+  aes(x = genre, y = avgRev) +
+  geom_col(fill = "#BF89E1") +
+  labs(
+    x = "Genre",
+    y = "Average Revenue",
+    title = "Genre vs Average Revenue"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+```
 
-You can add options to executable code like this
+## Genre vs. Average Revenue and Runtime
+
+```{r}
+ggplot(genresWrangled) +
+  aes(x = genre, y = avgRev, fill = avgRun) +
+  geom_col() +
+  scale_fill_gradient(low = "#6D1A4C", high = "#E5BADD") +
+  labs(
+    x = "Genre",
+    y = "Average Revenue",
+    title = "Genre vs. Average Revenue and Runtime",
+    fill = "Average Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+
+```
+
+## Average Rating vs. Average Revenue and Runtime
+
+```{r}
+ggplot(moviesCleaned) +
+  aes(x = revenue, y = averageRating, colour = runtime) +
+  geom_point(size = 2.55) +
+  scale_color_gradient(low = "#132B43", high = "#56B1F7") +
+  labs(
+    x = "Revenue",
+    y = "Average Rating",
+    title = "Average Rating vs Revenue and Runtime",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+```
 
 ```{r}
 #| echo: false

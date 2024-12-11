@@ -17,8 +17,9 @@ moviesCleaned <- moviesRaw %>%
   filter(status == "Released") %>%
   filter(revenue > 1) %>%
   filter(runtime >= 30 ) %>%
-  filter(budget >=  1000) %>%
-  filter(numVotes >=  1000) %>%
+  filter(runtime <= 220) %>%
+  filter(budget >= 1000) %>%
+  filter(numVotes >= 1000) %>%
   filter(!duplicated(title)) %>%
   filter(!grepl('UFC', title)) %>%
   drop_na()
@@ -69,16 +70,19 @@ genresWrangled <- moviesCleaned %>%
     medianRev = median(revenue),
     Q3Rev = quantile(revenue, probs = 0.75),
     maxRev = max(revenue),
+    avgRev = mean(revenue),
     minRating = min(averageRating),
     Q1Rating = quantile(averageRating, probs = 0.25),
     medianRating = median(averageRating),
     Q3Rating = quantile(averageRating, probs = 0.75),
     maxRating = max(averageRating),
-    minBudget = min(budget),
-    Q1Budget = quantile(budget, probs = 0.25),
-    medianBudget = median(budget),
-    Q3Budget = quantile(budget, probs = 0.75),
-    maxBudget = max(budget),
+    avgRating = mean(averageRating),
+    minRun = min(runtime),
+    Q1Run = quantile(runtime, probs = 0.25),
+    medianRun = median(runtime),
+    Q3Run = quantile(runtime, probs = 0.75),
+    maxRun = max(runtime),
+    avgRun = mean(runtime),
     count = n(),
     .groups = "drop"
   )
