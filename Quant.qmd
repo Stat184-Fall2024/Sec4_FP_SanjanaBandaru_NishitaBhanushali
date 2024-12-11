@@ -1,0 +1,174 @@
+---
+title: "Quantitative Visualization"
+format: pdf
+editor: visual
+---
+
+## Quantitative Research Questions
+
+1.  What's the relationship between revenue and voting average? - Quant
+2.  How does run time affect voting average? - Quant
+3.  How does run time affect revenue? - Quant
+4.  What is the relationship between genre, revenue, runtime, and voting average. - Quant
+
+## Load Libraries and Packages
+
+```{r}
+install.packages("ggplot2")
+install.packages("janitor")
+install.packages("knitr")
+install.packages("kableExtra")
+install.packages("dplyr")
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("rvest")
+install.packages("esquisse")
+
+
+library(janitor)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(rvest)
+library(plotly)
+library(esquisse)
+```
+
+## Read and Data Wrangle
+
+```{r}
+
+moviesRaw <- read_csv(
+  file = "~/Desktop/STAT184/IMDBMovies.csv"
+)
+
+moviesCleaned <- moviesRaw %>%
+  dplyr:: select(-id, -vote_average, -vote_count, -overview, 
+                 -backdrop_path, -homepage, -tconst, -poster_path, -tagline, -keywords, 
+                 -directors, -writers, -cast, -original_title, -popularity
+  ) %>%
+  filter(adult == FALSE) %>%
+  filter(grepl('English', spoken_languages)) %>%
+  filter(original_language == "en") %>%
+  dplyr:: select(-original_language, -spoken_languages, -adult) %>%
+  filter(!grepl('19', release_date)) %>%
+  filter(status == "Released") %>%
+  filter(revenue > 1) %>%
+  filter(runtime >= 30 ) %>%
+  filter(runtime <= 220) %>%
+  filter(budget >= 1000) %>%
+  filter(numVotes >= 1000) %>%
+  filter(!duplicated(title)) %>%
+  filter(!grepl('UFC', title)) %>%
+  drop_na()
+
+```
+
+## Revenue vs. Average Rating
+
+```{r}
+ggplot(
+  data = moviesCleaned,
+  mapping = aes(
+    x = averageRating,
+    y = revenue
+  )
+)+
+  geom_point(size = 1)+
+  labs(
+    x = "Average Rating (out of 10)",
+    y = "Revenue ($)",
+    title = "Revenue vs. Average Rating"
+  )+
+  theme_bw()+
+  theme(
+    text = element_text(family="Times New Roman")
+  )
+```
+
+## Runtime vs. Average Rating
+
+```{r}
+ggplot(
+  data = moviesCleaned,
+  mapping = aes(
+    x = averageRating,
+    y = runtime
+  )
+)+
+  geom_point(size = 1)+
+  labs(
+    x = "Average Rating (out of 10)",
+    y = "Runtime (mins)",
+    title = "Runtime vs. Average Rating"
+  )+
+  theme_bw()+
+  theme(
+    text = element_text(family="Times New Roman")
+  )
+```
+
+## Revenue vs. Runtime
+
+```{r}
+ggplot(
+  data = moviesCleaned,
+  mapping = aes(
+    x = runtime,
+    y = revenue
+  )
+)+
+  geom_point(size = 1)+
+  labs(
+    x = "Runtime (mins)",
+    y = "Revenue ($)",
+    title = "Revenue vs. Runtime"
+  )+
+  theme_bw()+
+  theme(
+    text = element_text(family="Times New Roman")
+  )
+```
+
+## Revenue vs. Runtime with Genre and Average Rating
+
+```{r}
+ggplot(
+  data = moviesCleaned,
+  mapping = aes(
+    x = runtime,
+    y = revenue,
+    z = averageRating,
+    color = genres,
+    #shape = averageRating
+  )
+)+
+  geom_line(linewidth = 1)+
+  labs(
+    x = "Runtime (mins)",
+    y = "Revenue ($)",
+    z = "Average Rating",
+    color = "Genre",
+    #shape = "Average Rating
+    title = "Revenue vs. Runtime with Genre and Average Rating"
+  )+
+  scale_color_manual(
+    values = c("ff3333", "ffa733", "e2ff33", "40ff33", "33ffc1", "3397ff",
+               "333bff", "b133ff", "ff33cb", "ff336f", "ffd5b2", "ffb2c9",
+               "f7ffb2", "b2ffc0", "b2f9ff", "b4b2ff", "e5b2ff", "ffb2b2",
+               "534a4a")
+  )
+  theme_bw()+
+  theme(
+    legend.position = "top",
+    text = element_text(family="Times New Roman")
+  )
+```
+
+-   need to edit
+
+The `echo: false` option disables the printing of code (only output is displayed).
