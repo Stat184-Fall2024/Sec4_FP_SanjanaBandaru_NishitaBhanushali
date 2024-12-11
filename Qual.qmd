@@ -11,20 +11,10 @@ editor: visual
 3.  How does genre affect revenue? - Qual
 4.  What is the relationship between genre, revenue, runtime, and voting average. - Qual
 
-## Install and Load Packages
+
+## Load Packages
 
 ```{r}
-install.packages("ggplot2")
-install.packages("janitor")
-install.packages("knitr")
-install.packages("kableExtra")
-install.packages("dplyr")
-install.packages("tidyverse")
-install.packages("tidyr")
-install.packages("dplyr")
-install.packages("rvest")
-install.packages("esquisse")
-
 library(janitor)
 library(knitr)
 library(kableExtra)
@@ -130,6 +120,7 @@ genresWrangled <- moviesCleaned %>%
 View(moviesCleaned)
 ```
 
+
 ## Genre and Rating
 
 ```{r}
@@ -147,7 +138,8 @@ ggplot(genresWrangled) +
     face = "bold",
     hjust = 0.5),
     axis.title.y = element_text(size = 15L),
-    axis.title.x = element_text(size = 15L)
+    axis.title.x = element_text(size = 15L),
+    axis.text.x = element_text(size = 4L)
   )
 ```
 
@@ -168,7 +160,8 @@ ggplot(genresWrangled) +
     face = "bold",
     hjust = 0.5),
     axis.title.y = element_text(size = 15L),
-    axis.title.x = element_text(size = 15L)
+    axis.title.x = element_text(size = 15L),
+    axis.text.x = element_text(size = 4L)
   )
 ```
 
@@ -189,7 +182,8 @@ ggplot(genresWrangled) +
     face = "bold",
     hjust = 0.5),
     axis.title.y = element_text(size = 15L),
-    axis.title.x = element_text(size = 15L)
+    axis.title.x = element_text(size = 15L),
+    axis.text.x = element_text(size = 4L)
   )
 ```
 
@@ -212,7 +206,8 @@ ggplot(genresWrangled) +
     face = "bold",
     hjust = 0.5),
     axis.title.y = element_text(size = 15L),
-    axis.title.x = element_text(size = 15L)
+    axis.title.x = element_text(size = 15L),
+    axis.text.x = element_text(size = 4L)
   )
 
 ```
@@ -239,10 +234,3 @@ ggplot(moviesCleaned) +
     axis.title.x = element_text(size = 15L)
   )
 ```
-
-```{r}
-#| echo: false
-2 * 2
-```
-
-The `echo: false` option disables the printing of code (only output is displayed).

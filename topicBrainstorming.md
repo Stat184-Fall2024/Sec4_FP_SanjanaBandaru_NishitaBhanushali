@@ -60,7 +60,15 @@ Writing Work Breakdown:
 - Results/Conclusion
 
 
-
+Group Questions:
+- Should we really keep at this with 4 variables? I think we could drop runtime and not suffer.
+- How do we want to split up the writing?
+- Struggling with the summary stats table
+  - Could do just a frequency table for genre to get context for the averages
+  - Did a 3-way graph with runtime, revenue, and rating, necessary? Genre really doesn't want to be graphed in 4D.
+  - Summary table for just genre?
+  - Should we evaluate everything in the context of rating? or revenue? -> then could do a linear model
+  - 
 
 
 
