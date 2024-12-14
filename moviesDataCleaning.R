@@ -1,27 +1,45 @@
 library(tidyverse)
+library(readr)
 
-moviesRaw <- read_csv(
-  file = "~/Desktop/STAT184/IMDBMovies.csv"
+##Importing the Data----
+fantasyRaw <- read_csv(
+  file = "~/Desktop/STAT184/fantasy.csv"
 )
 
-moviesCleaned <- moviesRaw %>%
-  dplyr:: select(-id, -vote_average, -vote_count, -overview, 
-  -backdrop_path, -homepage, -tconst, -poster_path, -tagline, -keywords, 
-  -directors, -writers, -cast, -original_title, -popularity
+actionRaw <- read_csv(
+  file = "~/Desktop/STAT184/action.csv"
+)
+
+horrorRaw <- read_csv(
+  file = "~/Desktop/STAT184/horror.csv"
+)
+
+mysteryRaw <- read_csv(
+  file = "~/Desktop/STAT184/mystery.csv"
+)
+
+##Merging the Data----
+moviesRaw <- full_join(
+  x = fantasyRaw,
+  y = actionRaw
+) %>%
+  full_join(
+    y = horrorRaw
   ) %>%
-  filter(adult == FALSE) %>%
-  filter(grepl('English', spoken_languages)) %>%
-  filter(original_language == "en") %>%
-  dplyr:: select(-original_language, -spoken_languages, -adult) %>%
-  filter(!grepl('19', release_date)) %>%
-  filter(status == "Released") %>%
-  filter(revenue > 1) %>%
-  filter(runtime >= 30 ) %>%
-  filter(budget >=  1000) %>%
-  filter(numVotes >=  1000) %>%
-  filter(!duplicated(title)) %>%
-  filter(!grepl('UFC', title)) %>%
-  drop_na()
+  full_join(
+    y = mysteryRaw
+  ) 
+
+##Cleaning the Data----
+moviesCleaned <- moviesRaw %>%
+  rename(revenue = `gross(in $)`
+  ) %>%
+  dplyr:: select(-movie_id, -description, -director_id, -star_id
+  ) %>%
+  drop_na() %>%
+  filter(!grepl('19', year)) %>%
+  filter(!duplicated(movie_name)) %>%
+  mutate(runtime = readr::parse_number(runtime))
 
 info <- list(
   Count = ~as.double(n()),
@@ -33,12 +51,11 @@ info <- list(
   Max = ~as.double(max(.x))
 )
 
-genresWrangled <- moviesCleaned %>%
+moviesWrangled <- moviesCleaned %>%
   separate_wider_delim(
-    cols = genres,
+    cols = genre,
     delim = ",",
-    names = c("Genre1", "Genre2", "Genre3", "Genre4", "Genre5", "Genre6",
-    "Genre7", "Genre8", "Genre9"),
+    names = c("Genre1", "Genre2", "Genre3"),
     too_few = "align_start"
   ) %>%
   pivot_longer(
@@ -46,33 +63,16 @@ genresWrangled <- moviesCleaned %>%
     names_to = "genreNumber",
     values_to = "genre"
   ) %>%
-  drop_na() %>%
   mutate(
     genre = case_match(
       .x = genre,
       " Action" ~ "Action",
-      " Adventure" ~ "Adventure",
-      " Crime" ~ "Crime",
-      " Thriller" ~ "Thriller",
-      " Science Fiction" ~ "Science Fiction",
-      " Drama" ~ "Drama",
-      " Comedy" ~ "Comedy",
-      " TV Movie" ~ "TV Movie",
-      " Family" ~ "Family",
-      " Western" ~ "Western",
       " Mystery" ~ "Mystery",
-      " Romance" ~ "Romance",
-      " History" ~ "History",
-      " War" ~ "War",
       " Fantasy" ~ "Fantasy",
-      " Horror" ~ "Horror",
-      " Music" ~ "Music",
-      " Documentary" ~ "Documentary",
-      " Animation" ~ "Animation",
-      .default = genre
-    )
-  ) %>% 
- group_by(genre) %>%
-  summarize(across(c(revenue,budget,runtime), info)) %>%
-  select(-runtime_Count, -budget_Count) %>%
-  rename(count = revenue_Count)
+      " Horror" ~ "Horror"
+    )) %>%
+  group_by(genre) %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
