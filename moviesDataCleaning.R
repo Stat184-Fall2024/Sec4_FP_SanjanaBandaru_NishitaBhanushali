@@ -102,10 +102,20 @@ harryPotterSummary <- harryPotterMovies %>%
   rename(count = revenue_Count) 
 
 piratesMovies <- relevantMovies  %>%
-  filter(grepl('Pirates of the Caribbean: ', movie_name)) %>%
+  filter(grepl('Pirates of the Caribbean:', movie_name)) %>%
   select(-star, -genre)
 
 piratesSummary <- piratesMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+spiderMovies <- relevantMovies  %>%
+  filter(grepl('Spider-Man', movie_name)) %>%
+  select(-star, -genre)
+
+spiderSummary <- spiderMovies %>%
   summarize(across(c(revenue,runtime), info)) %>%
   select(-runtime_Count) %>%
   drop_na() %>%
