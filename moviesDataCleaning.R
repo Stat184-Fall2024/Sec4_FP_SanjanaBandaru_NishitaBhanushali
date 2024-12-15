@@ -1,5 +1,6 @@
 library(tidyverse)
 library(readr)
+library(dplyr)
 
 ##Importing the Data----
 fantasyRaw <- read_csv(
@@ -72,7 +73,29 @@ moviesWrangled <- moviesCleaned %>%
       " Horror" ~ "Horror"
     )) %>%
   group_by(genre) %>%
-  summarize(across(c(revenue,runtime), info)) %>%
+  summarize(across(c(revenue,runtime,rating), info)) %>%
   select(-runtime_Count) %>%
   drop_na() %>%
   rename(count = revenue_Count) 
+
+genres <- moviesCleaned %>%
+  separate_wider_delim(genre, ",", names = c("genre1", "genre2", "genre3"), too_few = "align_start")
+
+firstGenres <- genres %>%
+  filter(genre1 == "Action" | genre1 == "Horror" | genre1 == "Mystery" | genre1 == "Fantasy")
+
+
+test <- moviesCleaned %>%
+  separate_wider_delim(
+    cols = genre,
+    delim = ",",
+    names = c("Genre1", "Genre2", "Genre3"),
+    too_few = "align_start"
+  )
+
+firstGenres <- test %>%
+  filter(Genre1 == "Action" | Genre1 == "Horror" | Genre1 == "Mystery" | Genre1 == "Fantasy")
+
+
+
+
