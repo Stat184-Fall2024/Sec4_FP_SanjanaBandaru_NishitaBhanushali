@@ -1,6 +1,5 @@
 library(tidyverse)
 library(readr)
-library(dplyr)
 
 ##Importing the Data----
 fantasyRaw <- read_csv(
@@ -42,17 +41,8 @@ moviesCleaned <- moviesRaw %>%
   filter(!duplicated(movie_name)) %>%
   mutate(runtime = readr::parse_number(runtime))
 
-info <- list(
-  Count = ~as.double(n()),
-  Min = ~as.double(min(.x)),
-  Q1 = ~as.double(quantile(.x,probs = 0.25, na.rm = TRUE)),
-  Median = ~as.double(median(.x)),
-  Avg = ~as.double(mean(.x)),
-  Q3 = ~as.double(quantile(.x,probs = 0.75, na.rm = TRUE)),
-  Max = ~as.double(max(.x))
-)
-
-moviesWrangled <- moviesCleaned %>%
+##Listing Only Relevant Movies----
+relevantMovies <- moviesCleaned %>%
   separate_wider_delim(
     cols = genre,
     delim = ",",
@@ -64,38 +54,60 @@ moviesWrangled <- moviesCleaned %>%
     names_to = "genreNumber",
     values_to = "genre"
   ) %>%
-  mutate(
-    genre = case_match(
-      .x = genre,
-      " Action" ~ "Action",
-      " Mystery" ~ "Mystery",
-      " Fantasy" ~ "Fantasy",
-      " Horror" ~ "Horror"
-    )) %>%
+ mutate(genre = case_match(
+   genre,
+   " Action" ~ "Action",
+   " Mystery" ~ "Mystery",
+   " Fantasy" ~ "Fantasy",
+  " Horror" ~ "Horror", 
+  .default = genre
+ )) %>%
+  drop_na() %>%
+  filter(
+    genre == "Action" | 
+    genre == "Horror" | 
+    genre == "Mystery" | 
+    genre == "Fantasy") %>%
+  select(-genreNumber)
+
+
+
+##Getting Summary Statistics----
+info <- list(
+  Count = ~as.double(n()),
+  Min = ~as.double(min(.x)),
+  Q1 = ~as.double(quantile(.x,probs = 0.25, na.rm = TRUE)),
+  Median = ~as.double(median(.x)),
+  Avg = ~as.double(mean(.x)),
+  Q3 = ~as.double(quantile(.x,probs = 0.75, na.rm = TRUE)),
+  Max = ~as.double(max(.x))
+)
+
+moviesSummary <- relevantMovies %>%
   group_by(genre) %>%
-  summarize(across(c(revenue,runtime,rating), info)) %>%
+  summarize(across(c(revenue,runtime), info)) %>%
   select(-runtime_Count) %>%
   drop_na() %>%
   rename(count = revenue_Count) 
 
-genres <- moviesCleaned %>%
-  separate_wider_delim(genre, ",", names = c("genre1", "genre2", "genre3"), too_few = "align_start")
+##Film Franchises----
+harryPotterMovies <- relevantMovies %>%
+  filter(grepl('Harry Potter', movie_name)) %>%
+  select(-star, -genre)
 
-firstGenres <- genres %>%
-  filter(genre1 == "Action" | genre1 == "Horror" | genre1 == "Mystery" | genre1 == "Fantasy")
+harryPotterSummary <- harryPotterMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
 
+piratesMovies <- relevantMovies  %>%
+  filter(grepl('Pirates of the Caribbean: ', movie_name)) %>%
+  select(-star, -genre)
 
-test <- moviesCleaned %>%
-  separate_wider_delim(
-    cols = genre,
-    delim = ",",
-    names = c("Genre1", "Genre2", "Genre3"),
-    too_few = "align_start"
-  )
-
-firstGenres <- test %>%
-  filter(Genre1 == "Action" | Genre1 == "Horror" | Genre1 == "Mystery" | Genre1 == "Fantasy")
-
-
-
+piratesSummary <- piratesMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
 
