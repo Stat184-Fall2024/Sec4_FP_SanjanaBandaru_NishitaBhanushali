@@ -14,18 +14,6 @@ editor: visual
 ## Load Libraries and Packages
 
 ```{r}
-install.packages("ggplot2")
-install.packages("janitor")
-install.packages("knitr")
-install.packages("kableExtra")
-install.packages("dplyr")
-install.packages("tidyverse")
-install.packages("tidyr")
-install.packages("dplyr")
-install.packages("rvest")
-install.packages("esquisse")
-
-
 library(janitor)
 library(knitr)
 library(kableExtra)
@@ -42,29 +30,75 @@ library(esquisse)
 
 ```{r}
 
-moviesRaw <- read_csv(
-  file = "~/Desktop/STAT184/IMDBMovies.csv"
+##Importing the Data----
+##Importing the Data----
+fantasyRaw <- read_csv(
+  file = "~/Desktop/STAT184/fantasy.csv"
 )
 
-moviesCleaned <- moviesRaw %>%
-  dplyr:: select(-id, -vote_average, -vote_count, -overview, 
-                 -backdrop_path, -homepage, -tconst, -poster_path, -tagline, -keywords, 
-                 -directors, -writers, -cast, -original_title, -popularity
+actionRaw <- read_csv(
+  file = "~/Desktop/STAT184/action.csv"
+)
+
+horrorRaw <- read_csv(
+  file = "~/Desktop/STAT184/horror.csv"
+)
+
+mysteryRaw <- read_csv(
+  file = "~/Desktop/STAT184/mystery.csv"
+)
+
+##Merging the Data----
+moviesRaw <- full_join(
+  x = fantasyRaw,
+  y = actionRaw
+) %>%
+  full_join(
+    y = horrorRaw
   ) %>%
-  filter(adult == FALSE) %>%
-  filter(grepl('English', spoken_languages)) %>%
-  filter(original_language == "en") %>%
-  dplyr:: select(-original_language, -spoken_languages, -adult) %>%
-  filter(!grepl('19', release_date)) %>%
-  filter(status == "Released") %>%
-  filter(revenue > 1) %>%
-  filter(runtime >= 30 ) %>%
-  filter(runtime <= 220) %>%
-  filter(budget >= 1000) %>%
-  filter(numVotes >= 1000) %>%
-  filter(!duplicated(title)) %>%
-  filter(!grepl('UFC', title)) %>%
-  drop_na()
+  full_join(
+    y = mysteryRaw
+  ) 
+
+##Cleaning the Data----
+moviesCleaned <- moviesRaw %>%
+  rename(revenue = `gross(in $)`
+  ) %>%
+  dplyr:: select(-movie_id, -description, -director_id, -star_id
+  ) %>%
+  drop_na() %>%
+  filter(!grepl('19', year)) %>%
+  filter(!duplicated(movie_name)) %>%
+  mutate(runtime = readr::parse_number(runtime))
+
+##Listing Only Relevant Movies----
+relevantMovies <- moviesCleaned %>%
+  separate_wider_delim(
+    cols = genre,
+    delim = ",",
+    names = c("Genre1", "Genre2", "Genre3"),
+    too_few = "align_start"
+  ) %>%
+  pivot_longer(
+    cols = starts_with("Genre"),
+    names_to = "genreNumber",
+    values_to = "genre"
+  ) %>%
+  mutate(genre = case_match(
+    genre,
+    " Action" ~ "Action",
+    " Mystery" ~ "Mystery",
+    " Fantasy" ~ "Fantasy",
+    " Horror" ~ "Horror", 
+    .default = genre
+  )) %>%
+  drop_na() %>%
+  filter(
+    genre == "Action" | 
+      genre == "Horror" | 
+      genre == "Mystery" | 
+      genre == "Fantasy") %>%
+  select(-genreNumber)
 
 ```
 
@@ -72,9 +106,9 @@ moviesCleaned <- moviesRaw %>%
 
 ```{r}
 ggplot(
-  data = moviesCleaned,
+  data = relevantMovies,
   mapping = aes(
-    x = averageRating,
+    x = rating,
     y = revenue
   )
 )+
@@ -88,15 +122,18 @@ ggplot(
   theme(
     text = element_text(family="Times New Roman")
   )
+
 ```
+
+![](images/clipboard-3548402614.png)
 
 ## Runtime vs. Average Rating
 
 ```{r}
 ggplot(
-  data = moviesCleaned,
+  data = relevantMovies,
   mapping = aes(
-    x = averageRating,
+    x = rating,
     y = runtime
   )
 )+
@@ -112,11 +149,13 @@ ggplot(
   )
 ```
 
+![](images/clipboard-1458109727.png)
+
 ## Revenue vs. Runtime
 
 ```{r}
 ggplot(
-  data = moviesCleaned,
+  data = relevantMovies,
   mapping = aes(
     x = runtime,
     y = revenue
@@ -134,16 +173,18 @@ ggplot(
   )
 ```
 
+![](images/clipboard-3989056906.png)
+
 ## Revenue vs. Runtime with Genre and Average Rating
 
 ```{r}
-ggplot(
-  data = moviesCleaned,
+scatterplot <- ggplot(
+  data = relevantMovies,
   mapping = aes(
     x = runtime,
     y = revenue,
-    z = averageRating,
-    color = genres,
+    color = rating,
+    #color = genre,
     #shape = averageRating
   )
 )+
@@ -151,24 +192,21 @@ ggplot(
   labs(
     x = "Runtime (mins)",
     y = "Revenue ($)",
-    z = "Average Rating",
-    color = "Genre",
+    color = "Average Rating",
+    #color = "Genre",
     #shape = "Average Rating
     title = "Revenue vs. Runtime with Genre and Average Rating"
   )+
-  scale_color_manual(
-    values = c("ff3333", "ffa733", "e2ff33", "40ff33", "33ffc1", "3397ff",
-               "333bff", "b133ff", "ff33cb", "ff336f", "ffd5b2", "ffb2c9",
-               "f7ffb2", "b2ffc0", "b2f9ff", "b4b2ff", "e5b2ff", "ffb2b2",
-               "534a4a")
-  )
+  scale_color_gradient(low = "#AFEEEE", high = "#668B8B")
+facet_scatter <- scatterplot + facet_wrap(~genre, scales = "free")+
   theme_bw()+
   theme(
     legend.position = "top",
     text = element_text(family="Times New Roman")
   )
+print(facet_scatter)
 ```
 
--   need to edit
+![](images/clipboard-3908480270.png)
 
 The `echo: false` option disables the printing of code (only output is displayed).
