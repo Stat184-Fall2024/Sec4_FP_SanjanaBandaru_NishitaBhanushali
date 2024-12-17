@@ -6,9 +6,10 @@ editor: visual
 
 ## Qualitative Research Questions
 
-1.  How does genre affect voting average? - Qual
-2.  First, second, third genre listed for each of 4 genres
-3.  Summary stats for genre (count,
+1. How does genre affect voting average? - Qual
+2. How does genre affect runtime?
+3. How does genre affect revenue?
+4. What are the ratings, revenues, and runtimes across 3 popular movie franchises?
 
 ## Load Packages
 
@@ -25,19 +26,145 @@ library(plotly)
 library(esquisse)
 ```
 
-
-## First Listed Genre and Rating
+## Read in, Clean, and Wrangle Data
 
 ```{r}
-ggplot(firstGenres) +
-  aes(x = rating, y = Genre1) +
-  geom_boxplot(fill = "#4682B4") +
+##Importing the Data----
+fantasyRaw <- read_csv(
+  file = "~/Desktop/STAT184/fantasy.csv"
+)
+
+actionRaw <- read_csv(
+  file = "~/Desktop/STAT184/action.csv"
+)
+
+horrorRaw <- read_csv(
+  file = "~/Desktop/STAT184/horror.csv"
+)
+
+mysteryRaw <- read_csv(
+  file = "~/Desktop/STAT184/mystery.csv"
+)
+
+##Merging the Data----
+moviesRaw <- full_join(
+  x = fantasyRaw,
+  y = actionRaw
+) %>%
+  full_join(
+    y = horrorRaw
+  ) %>%
+  full_join(
+    y = mysteryRaw
+  ) 
+
+##Cleaning the Data----
+moviesCleaned <- moviesRaw %>%
+  rename(revenue = `gross(in $)`
+  ) %>%
+  dplyr:: select(-movie_id, -description, -director_id, -star_id
+  ) %>%
+  drop_na() %>%
+  filter(!grepl('19', year)) %>%
+  filter(!duplicated(movie_name)) %>%
+  mutate(runtime = readr::parse_number(runtime))
+
+##Listing Only Relevant Movies----
+relevantMovies <- moviesCleaned %>%
+  separate_wider_delim(
+    cols = genre,
+    delim = ",",
+    names = c("Genre1", "Genre2", "Genre3"),
+    too_few = "align_start"
+  ) %>%
+  pivot_longer(
+    cols = starts_with("Genre"),
+    names_to = "genreNumber",
+    values_to = "genre"
+  ) %>%
+ mutate(genre = case_match(
+   genre,
+   " Action" ~ "Action",
+   " Mystery" ~ "Mystery",
+   " Fantasy" ~ "Fantasy",
+  " Horror" ~ "Horror", 
+  .default = genre
+ )) %>%
+  drop_na() %>%
+  filter(
+    genre == "Action" | 
+    genre == "Horror" | 
+    genre == "Mystery" | 
+    genre == "Fantasy") %>%
+  select(-genreNumber)
+
+
+
+##Getting Summary Statistics----
+info <- list(
+  Count = ~as.double(n()),
+  Min = ~as.double(min(.x)),
+  Q1 = ~as.double(quantile(.x,probs = 0.25, na.rm = TRUE)),
+  Median = ~as.double(median(.x)),
+  Avg = ~as.double(mean(.x)),
+  Q3 = ~as.double(quantile(.x,probs = 0.75, na.rm = TRUE)),
+  Max = ~as.double(max(.x))
+)
+
+moviesSummary <- relevantMovies %>%
+  group_by(genre) %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+##Film Franchises----
+harryPotterMovies <- relevantMovies %>%
+  filter(grepl('Harry Potter', movie_name)) %>%
+  select(-star, -genre)
+
+harryPotterSummary <- harryPotterMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+piratesMovies <- relevantMovies  %>%
+  filter(grepl('Pirates of the Caribbean:', movie_name)) %>%
+  select(-star, -genre) %>%
+  filter(!duplicated(movie_name))
+
+piratesSummary <- piratesMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+spiderMovies <- relevantMovies  %>%
+  filter(grepl('Spider-Man', movie_name)) %>%
+  select(-star, -genre) %>%
+  filter(!duplicated(movie_name))
+
+spiderSummary <- spiderMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count)
+```
+
+
+## Genre and Rating
+
+```{r}
+ggplot(relevantMovies) +
+  aes(x = rating, y = genre) +
+  geom_boxplot(fill = "#A569FF") +
   labs(
-    x = "Average Rating of Movies",
+    x = "Average Movie Rating",
     y = "Genres",
-    title = "First-Listed Genre and Rating"
+    title = "Average Rating by Genre"
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(size = 20L,
     face = "bold",
@@ -47,12 +174,145 @@ ggplot(firstGenres) +
     axis.text.y = element_text(size = 13L),
     axis.text.x = element_text(size = 13L)
   )
+```
+
+## Genre and Revenue
+
+```{r}
+ggplot(relevantMovies) +
+  aes(x = genre, y = revenue) +
+  geom_col(fill = "#4682B4") +
+  labs(
+    x = "Genre",
+    y = "Revenue",
+    title = "Genre vs Largest Revenue"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.text.y = element_text(size = 13L),
+    axis.text.x = element_text(size = 13L)
+  )
 
 ```
 
+## Genre vs Runtime
+
+```{r}
+ggplot(relevantMovies) +
+  aes(x = runtime, y = genre) +
+  geom_boxplot(fill = "#65BA65") +
+  labs(
+    x = "Movie Runtimes",
+    y = "Genres",
+    title = "Runtimes vs Genres"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+
+```
+
+## Harry Potter Movies
+
+```{r}
+ggplot(harryPotterMovies) +
+  aes(
+    x = movie_name,
+    y = rating,
+    fill = revenue,
+    colour = runtime
+  ) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_gradient() +
+  scale_color_distiller(palette = "OrRd") +
+  labs(
+    x = "Movie Title",
+    y = "Average Movie Rating",
+    title = "Rating, Revenue, and Runtime of Harry Potter Movies",
+    fill = "Revenue",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 12L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 10L),
+    axis.title.x = element_text(size = 10L),
+    axis.text.x = element_text(size = 2L)
+  )
+
+```
+
+## Pirates of the Caribbean Movies
+
+```{r}
+ggplot(piratesMovies) +
+  aes(
+    x = movie_name,
+    y = rating,
+    fill = revenue,
+    colour = runtime
+  ) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_gradient() +
+  scale_color_distiller(palette = "OrRd") +
+  labs(
+    x = "Movie Title",
+    y = "Average Movie Rating",
+    title = "Rating, Revenue, and Runtime of Pirates Movies",
+    fill = "Revenue",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 13L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 10L),
+    axis.title.x = element_text(size = 10L),
+    axis.text.x = element_text(size = 3L)
+  )
+```
 
 
+## Spiderman Movies
 
-
+```{r}
+ggplot(spiderMovies) +
+  aes(
+    x = movie_name,
+    y = rating,
+    fill = revenue,
+    colour = runtime
+  ) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_gradient() +
+  scale_color_distiller(palette = "OrRd") +
+  labs(
+    x = "Movie Title",
+    y = "Average Movie Rating",
+    title = "Rating, Revenue, and Runtime of Spiderman Movies",
+    fill = "Revenue",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 13L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 10L),
+    axis.title.x = element_text(size = 10L),
+    axis.text.x = element_text(size = 3L)
+  )
+```
 
 
