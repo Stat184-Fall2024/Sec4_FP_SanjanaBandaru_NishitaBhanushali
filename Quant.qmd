@@ -24,6 +24,9 @@ library(tidyr)
 library(rvest)
 library(plotly)
 library(esquisse)
+library(readr)
+library(jtools)
+library(stargazer)
 ```
 
 ## Read and Data Wrangle
@@ -175,6 +178,19 @@ ggplot(
 
 ![](images/clipboard-3989056906.png)
 
+## Regression Tables for Quantitative Graphs
+
+```{r}
+data(relevantMovies)
+revenue_rating_regression <- lm(revenue ~ rating, data = relevantMovies)
+runtime_rating_regression <- lm(runtime ~ rating, data = relevantMovies)
+revenue_runtime_regression <- lm(revenue ~ runtime, data = relevantMovies)
+
+stargazer(revenue_rating_regression,runtime_rating_regression,revenue_runtime_regression,  type = 'text')
+```
+
+![](images/Screen Shot 2024-12-17 at 5.27.07 PM.png)
+
 ## Revenue vs. Runtime with Genre and Average Rating
 
 ```{r}
@@ -210,3 +226,5 @@ print(facet_scatter)
 ![](images/clipboard-3908480270.png)
 
 The `echo: false` option disables the printing of code (only output is displayed).
+
+\
