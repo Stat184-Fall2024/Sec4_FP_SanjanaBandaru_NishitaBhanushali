@@ -103,7 +103,8 @@ harryPotterSummary <- harryPotterMovies %>%
 
 piratesMovies <- relevantMovies  %>%
   filter(grepl('Pirates of the Caribbean:', movie_name)) %>%
-  select(-star, -genre)
+  select(-star, -genre) %>%
+  filter(!duplicated(movie_name))
 
 piratesSummary <- piratesMovies %>%
   summarize(across(c(revenue,runtime), info)) %>%
@@ -113,7 +114,8 @@ piratesSummary <- piratesMovies %>%
 
 spiderMovies <- relevantMovies  %>%
   filter(grepl('Spider-Man', movie_name)) %>%
-  select(-star, -genre)
+  select(-star, -genre) %>%
+  filter(!duplicated(movie_name))
 
 spiderSummary <- spiderMovies %>%
   summarize(across(c(revenue,runtime), info)) %>%
