@@ -1,0 +1,70 @@
+---
+title: "Final Report"
+format: pdf
+editor: visual
+---
+
+# IMDB Movies Data Analysis
+
+## Introduction
+
+```         
+  - State your research questions and explain them. (What is our goal/purpose in this project? Why did we choose these questions? What does some of the jargon mean?)
+  - Describe the provenance of your data. That is, where did you get the data, who collected the data, for what purpose, who/what make up the cases.
+  - Explain how your data meet the FAIR and/or CARE Principles.
+```
+
+## Methodology
+
+```         
+  - Describe what attributes you'll focus your analysis on (mention if they are part of your data sets or if you created them out of your data sets).
+  - How will the analysis be conducted and displayed?
+  - What did we do to assess our data, pare down the variables, compare them, etc?
+    - Talk about old vs new data sets
+```
+
+## Exploratory Data Analysis
+
+### Quantitative
+
+```         
+  - Create multiple data visualizations (tables and figures) that assist both the team and readers in understanding the data.
+  - Narrative text explaining the context of the project to help the reader make sense of what is going on.
+  - What are we seeing from the graphs? What’s important? What’s significant? What does what’s being displayed mean on both specific and wide levels?   
+    - e.g. specific = definition, wide = relevance in project
+  - Explain what the clumps, trends, shapes, etc. mean
+  - Why did we use the visualizations we did?
+```
+
+### Qualitative
+
+```         
+  - Create multiple data visualizations (tables and figures) that assist both the team and readers in understanding the data.
+  - Narrative text explaining the context of the project to help the reader make sense of what is going on.
+  - What are we seeing from the graphs? What’s important? What’s significant? What does what’s being displayed mean on both specific and wide levels?   
+    - e.g. specific = definition, wide = relevance in project
+  - Explain what the clumps, trends, shapes, etc. mean
+  - Why did we use the visualizations we did?
+```
+
+## Results and Conclusion
+
+```         
+  - Summary of what we learned from the EDA
+  - Answer research questions
+  - Conclusion, future trends, relevance/importance
+```
+
+## References
+
+```         
+  - Old data set citation
+  - New data set citation
+```
+
+## Code Appendix
+
+```         
+  - Code chunk
+```
+
