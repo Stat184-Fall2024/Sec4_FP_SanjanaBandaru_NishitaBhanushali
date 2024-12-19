@@ -11,9 +11,10 @@ execute:
 ## Introduction
 
 ```         
-  - State your research questions and explain them. (What is our goal/purpose in this project? Why did we choose these questions? What are each of the variables in context?)
-  - Describe the provenance of your data. That is, where did you get the data, who collected the data, for what purpose, who/what make up the cases.
-  - Explain how your data meet the FAIR and/or CARE Principles.
+Our goal with this project was to understand how the public’s perception of a film was related to the film’s length, the film’s genre, and the film’s box office revenue. 
+
+In order to achieve this, we decided to use the data from a popular film rating website known as the Internet Movie Database, otherwise known as IMDB. IMDB is a vast and widely-used resource, and users can easily rate the film on the site as well as learn relevant information about the film’s production and release. The IMDB is easily accessible to any netizen, as is the dataset we are using which can be found on Kaggle. Our dataset was last updated 2 years ago, and the user who scraped the data from the IMDB website received a license to do so. IMDB has a weighted average rating system, and we will be utilizing these weighted averages. In addition to the weighted average, we can access data on how many people rated the film and what the true average rating is for any given film.
+
 ```
 
 ## Methodology
