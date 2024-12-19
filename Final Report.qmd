@@ -123,7 +123,7 @@ relevantMovies <- moviesCleaned %>%
 #### Revenue vs. Average Rating
 
 ```{r}
-#| label: fig-rev.rat
+#| label: fig-rev-rat
 #| echo: false
 ggplot(
   data = relevantMovies,
@@ -144,12 +144,12 @@ ggplot(
   )
 ```
 
-This visualization depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a movie will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
+The visualization, \@ref(fig:rev-rat), depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a movie will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
 
 #### Runtime vs. Average Rating
 
 ```{r}
-#| label: fig-run.rat
+#| label: fig-run-rat
 #| echo: false
 ggplot(
   data = relevantMovies,
@@ -170,12 +170,12 @@ ggplot(
   )
 ```
 
-This visualization depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a move will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
+The visualization, \@ref(fig:run-rat), depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a move will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
 
 #### Revenue vs. Runtime
 
 ```{r}
-#| label: fig-rev.run
+#| label: fig-rev-run
 #| echo: false
 ggplot(
   data = relevantMovies,
@@ -196,12 +196,12 @@ ggplot(
   )
 ```
 
-This visualization shows the relationship between revenue and runtime, and though there seems like no there is no linear correlation, but there is a curve similar to a bell. This is understandable as many people do not want to pay for an extremely short or long movie, so the movies that seemed to make the most money were in that typical less than 100 min to 150 min runtime. This could be also due to an external factor like budget affecting the quality of the movie, because larger movies could afford high-quality editing.
+The visualization, \@ref(fig:rev-run), shows the relationship between revenue and runtime, and though there seems like no there is no linear correlation, but there is a curve similar to a bell. This is understandable as many people do not want to pay for an extremely short or long movie, so the movies that seemed to make the most money were in that typical less than 100 min to 150 min runtime. This could be also due to an external factor like budget affecting the quality of the movie, because larger movies could afford high-quality editing.
 
 #### Regression Tables for Quantitative Graphs
 
 ```{r}
-#| label: fig-reg.quant
+#| label: fig-reg-quant
 #| echo: false
 data(relevantMovies)
 revenue_rating_regression <- lm(revenue ~ rating, data = relevantMovies)
@@ -211,12 +211,12 @@ revenue_runtime_regression <- lm(revenue ~ runtime, data = relevantMovies)
 stargazer(revenue_rating_regression,runtime_rating_regression,revenue_runtime_regression,  type = 'text')
 ```
 
-This regression table depicts the relationship between each of the variables in the visualizations depicted above.
+The, regression table, \@ref(fig:rev-quant) depicts the relationship between each of the variables in the visualizations depicted above.
 
 #### Revenue vs. Runtime with Genre and Average Rating
 
 ```{r}
-#| label: fig-rev.run.gen.rat
+#| label: fig-rev-run-gen-rat
 #| echo: false
 scatterplot <- ggplot(
   data = relevantMovies,
@@ -247,7 +247,7 @@ facet_scatter <- scatterplot + facet_wrap(~genre, scales = "free")+
 print(facet_scatter)
 ```
 
-This final visualization is 4D, depicting the relationship between the genre, runtime, revenue, and average rating. Action seems to have the most bell-curve shape, with fantasy, horror, and mystery having large plateaus and peaks throughout their graphs. Horror seemed to have the most movies with the lowest ratings, and mystery and action had several high-rated movies. Additionally, though it seems that mystery had several movies that made a lot of money, the values on the y-axis are significantly smaller than those on the action and fantasy graphs. This means that fantasy must have had the highest-grossing movies, though action has more movies that made consistently more money. Horror and mystery are both movies that have had the shortest runtime, which is understandable as action and fantasy typically requires more budget, and as a result, can afford longer runtime. All in all, there is definitely a relationship between all four variables, because it is clear that there are discrepancies between each variable in every genre. This is why it was crucial to separate the movie by genre, because the values were so different for every movie in the category for the analysis to be as insightful as it currently is.
+This final visualization, \@ref(fig-rev-run-gen-rat) is 4D, depicting the relationship between the genre, runtime, revenue, and average rating. Action seems to have the most bell-curve shape, with fantasy, horror, and mystery having large plateaus and peaks throughout their graphs. Horror seemed to have the most movies with the lowest ratings, and mystery and action had several high-rated movies. Additionally, though it seems that mystery had several movies that made a lot of money, the values on the y-axis are significantly smaller than those on the action and fantasy graphs. This means that fantasy must have had the highest-grossing movies, though action has more movies that made consistently more money. Horror and mystery are both movies that have had the shortest runtime, which is understandable as action and fantasy typically requires more budget, and as a result, can afford longer runtime. All in all, there is definitely a relationship between all four variables, because it is clear that there are discrepancies between each variable in every genre. This is why it was crucial to separate the movie by genre, because the values were so different for every movie in the category for the analysis to be as insightful as it currently is.
 
 ### Qualitative
 
@@ -633,7 +633,7 @@ spiderMovies %>%
 
 ## Results and Conclusion
 
-Throughout both quantitative and qualitative EDA, we were able to note the relationship between genre, voting average, revenue, and runtime of movies rated on IMDB. It was crucial to run our analysis in parts like how we did above, as there were several confounding variables like the popularity of the genre or the audience's disinterest in watching long movies. Taking apart movies into famous franchises provided extra analysis within small communities of movies, which was important for minimizing any possible external factors. Overall, action and fantasy had the highest grossing movies, while the longer the movies were, the lower their rating was. Several notes could be made by every combination of each of the four factors, but this EDA supplemented our questions about the factors that made a movie successful.
+Throughout both quantitative and qualitative EDA, we were able to note the relationship between genre, voting average, revenue, and runtime of movies rated on IMDB, as seen in \@ref(fig-rev-run-gen-rat) . It was crucial to run our analysis in parts like how we did above, as there were several confounding variables like the popularity of the genre or the audience's disinterest in watching long movies. Taking apart movies into famous franchises provided extra analysis within small communities of movies, which was important for minimizing any possible external factors. Overall, action and fantasy had the highest grossing movies, while the longer the movies were, the lower their rating was \@ref(fig-run-rat). Several notes could be made by every combination of each of the four factors, but this EDA supplemented our questions about the factors that made a movie successful.
 
 By using this EDA, movie makers can understand how to optimize their movie in order to get the most revenue and rating by critics on several platforms such as IMDB and Rotten Tomatoes. This would reduce the amount of movies that would not make enough profit, and keep the quality of the film industry high. The trends, as we found in the analysis, though mystery and horror may become more profitable genres with more exposure. All in all, understanding these four factors and their role in creating successful movies will help keep the integrity of films high and make sure that making movies isn't as daunting as it may seem.
 
@@ -645,3 +645,8 @@ By using this EDA, movie makers can understand how to optimize their movie in or
 ```
 
 ## Code Appendix
+
+```{r codeAppend, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+
+
+```
