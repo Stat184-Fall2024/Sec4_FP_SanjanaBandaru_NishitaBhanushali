@@ -641,8 +641,7 @@ By using this EDA, movie makers can understand how to optimize their movie in or
 ## References
 
 ```         
-  - Old data set citation
-  - New data set citation
+ Chidambara, R. (2022). IMDb Movie Dataset: All Movies by Genre [Data set]. https://www.kaggle.com/datasets/rajugc/imdb-movies-dataset-based-on-genre
 ```
 
 ## Code Appendix
