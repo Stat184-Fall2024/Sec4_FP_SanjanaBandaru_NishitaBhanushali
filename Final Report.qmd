@@ -327,7 +327,8 @@ ggplot(relevantMovies) +
   labs(
     x = "Average Movie Rating",
     y = "Genres",
-    title = "Average Rating by Genre"
+    title = "Average Rating by Genre",
+    caption = "A box plot comparing the movies' average voter ratings and the movies' genres."
   ) +
   theme_bw() +
   theme(
@@ -354,7 +355,8 @@ ggplot(relevantMovies) +
   labs(
     x = "Genre",
     y = "Revenue",
-    title = "Genre vs Largest Revenue"
+    title = "Genre vs Largest Revenue",
+    caption = "A bar plot comparing movies' largest revenues within four genres."
   ) +
   theme_bw() +
   theme(
@@ -379,7 +381,8 @@ ggplot(relevantMovies) +
   labs(
     x = "Movie Runtimes",
     y = "Genres",
-    title = "Runtimes vs Genres"
+    title = "Runtimes vs Genres",
+    caption = "A box plot comparing movies' runtimes and their genres."
   ) +
   theme_bw() +
   theme(
@@ -412,6 +415,7 @@ ggplot(harryPotterMovies) +
     x = "Movie Title",
     y = "Average Movie Rating",
     title = "Rating, Revenue, and Runtime of Harry Potter Movies",
+    caption = "A bar plot comparing movies in the Harry Potter franchise by their average voter ratings, runtimes, and revenues.",
     fill = "Revenue",
     color = "Runtime"
   ) +
@@ -447,6 +451,7 @@ ggplot(piratesMovies) +
     x = "Movie Title",
     y = "Average Movie Rating",
     title = "Rating, Revenue, and Runtime of Pirates Movies",
+    caption = "A bar plot comparing movies in the Pirates of the Caribbean franchise by their average voter ratings, runtimes, and revenues.",
     fill = "Revenue",
     color = "Runtime"
   ) +
@@ -461,7 +466,7 @@ ggplot(piratesMovies) +
   )
 ```
 
-#### Spiderman Movies
+#### Spider-Man Movies
 
 This bar graph displays different Spider-Man movies’ viewer rating, revenue, and runtime. This franchise spans mediums and decades, both of which could play an important role in setting the films apart from one another in these categories. The highest rated movie is Into the Spiderverse, the only animated movie in this analysis. However, it has the lowest revenue and the shortest runtime. The lowest rated movie was Spider-Man 3, but this has no clear correlation with any other variables. This is once again a departure from trends the previous franchise had between these variables, with the exception of the relationship between Harry Potter’s highest rated movie and shortest runtime.
 
@@ -481,7 +486,8 @@ ggplot(spiderMovies) +
   labs(
     x = "Movie Title",
     y = "Average Movie Rating",
-    title = "Rating, Revenue, and Runtime of Spiderman Movies",
+    title = "Rating, Revenue, and Runtime of Spider-Man Movies",
+    caption = "A bar plot comparing movies in the Spider-Man franchise by their average voter ratings, runtimes, and revenues.",
     fill = "Revenue",
     color = "Runtime"
   ) +
