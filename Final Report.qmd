@@ -2,6 +2,8 @@
 title: "Final Report"
 format: pdf
 editor: visual
+execute:
+  echo: false
 ---
 
 # IMDB Movies Data Analysis
@@ -27,13 +29,130 @@ editor: visual
 
 ### Quantitative
 
+First, we must run data wrangling and cleaning. This process is to make the data more readable and easier to analyze. Additionally, we needed to organize the genres in order to consider it as a factor in our analysis of the relationship between revenue, average rating, genre, and runtime.
+
+In our quantitative analysis process, we took several combinations of the quantitative factors in our research questions and ran visualizations and regression to understand the relationship between every possible combination.
+
+#### Revenue vs. Average Rating
+
 ```         
-  - Create multiple data visualizations (tables and figures) that assist both the team and readers in understanding the data.
-  - Narrative text explaining the context of the project to help the reader make sense of what is going on.
-  - What are we seeing from the graphs? What’s important? What’s significant? What does what’s being displayed mean on both specific and wide levels?   
-    - e.g. specific = definition, wide = relevance in project
-  - Explain what the clumps, trends, shapes, etc. mean
-  - Why did we use the visualizations we did?
+ggplot(
+  data = relevantMovies,
+  mapping = aes(
+    x = rating,
+    y = revenue
+  )
+)+
+  geom_point(size = 1)+
+  labs(
+    x = "Average Rating (out of 10)",
+    y = "Revenue ($)",
+    title = "Revenue vs. Average Rating"
+  )+
+  theme_bw()+
+  theme(
+    text = element_text(family="Times New Roman")
+  )
+```
+
+This visualization depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a move will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
+
+#### Runtime vs. Average Rating
+
+```         
+ggplot(
+  data = relevantMovies,
+  mapping = aes(
+    x = rating,
+    y = runtime
+  )
+)+
+  geom_point(size = 1)+
+  labs(
+    x = "Average Rating (out of 10)",
+    y = "Runtime (mins)",
+    title = "Runtime vs. Average Rating"
+  )+
+  theme_bw()+
+  theme(
+    text = element_text(family="Times New Roman")
+  )
+```
+
+This visualization depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a move will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
+
+#### Revenue vs. Runtime
+
+```         
+ggplot(
+  data = relevantMovies,
+  mapping = aes(
+    x = runtime,
+    y = revenue
+  )
+)+
+  geom_point(size = 1)+
+  labs(
+    x = "Runtime (mins)",
+    y = "Revenue ($)",
+    title = "Revenue vs. Runtime"
+  )+
+  theme_bw()+
+  theme(
+    text = element_text(family="Times New Roman")
+  )
+```
+
+This visualization shows the relationship between revenue and runtime, and though there seems like no there is no linear correlation, but there is a curve similar to a bell. This is understandable as many people do not want to pay for an extremely short or long movie, so the movies that seemed to make the most money were in that typical less than 100 min to 150 min runtime. This could be also due to an external factor like budget affecting the quality of the movie, because larger movies could afford high-quality editing.
+
+#### Regression Tables for Quantitative Graphs
+
+```         
+data(relevantMovies)
+revenue_rating_regression <- lm(revenue ~ rating, data = relevantMovies)
+runtime_rating_regression <- lm(runtime ~ rating, data = relevantMovies)
+revenue_runtime_regression <- lm(revenue ~ runtime, data = relevantMovies)
+
+stargazer(revenue_rating_regression,runtime_rating_regression,revenue_runtime_regression,  type = 'text')
+```
+
+This regression table depicts the relationship between each of the variables in the visualizations depicted above.
+
+#### Revenue vs. Runtime with Genre and Average Rating
+
+```         
+scatterplot <- ggplot(
+  data = relevantMovies,
+  mapping = aes(
+    x = runtime,
+    y = revenue,
+    color = rating,
+    #color = genre,
+    #shape = averageRating
+  )
+)+
+  geom_line(linewidth = 1)+
+  labs(
+    x = "Runtime (mins)",
+    y = "Revenue ($)",
+    color = "Average Rating",
+    #color = "Genre",
+    #shape = "Average Rating
+    title = "Revenue vs. Runtime with Genre and Average Rating"
+  )+
+  scale_color_gradient(low = "#AFEEEE", high = "#668B8B")
+facet_scatter <- scatterplot + facet_wrap(~genre, scales = "free")+
+  theme_bw()+
+  theme(
+    legend.position = "top",
+    text = element_text(family="Times New Roman")
+  )
+print(facet_scatter)
+```
+
+This final visualization is 4D, depicting the relationship between the genre, runtime, revenue, and average rating. Action seems to have the most bell-curve shape, with fantasy, horror, and mystery having large plateaus and peaks throughout their graphs. Horror seemed to have the most movies with the lowest ratings, and mystery and action had several high-rated movies. Additionally, though it seems that mystery had several movies that made a lot of money, the values on the y-axis are significantly smaller than those on the action and fantasy graphs. This means that fantasy must have had the highest-grossing movies, though action has more movies that made consistently more money. Horror and mystery are both movies that have had the shortest runtime, which is understandable as action and fantasy typically requires more budget, and as a result, can afford longer runtime. All in all, there is definitely a relationship between all four variables, because it is clear that there are discrepancies between each variable in every genre. This is why it was crucial to separate the movie by genre, because the values were so different for every movie in the category for the analysis to be as insightful as it currently is.
+
+```         
 ```
 
 ### Qualitative
@@ -67,4 +186,3 @@ editor: visual
 ```         
   - Code chunk
 ```
-
