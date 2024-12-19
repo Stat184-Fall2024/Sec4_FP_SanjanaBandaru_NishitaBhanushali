@@ -327,9 +327,17 @@ ggplot(spiderMovies) +
 ```
 
 
+##Summary Statistics of Movies by Genre
 
-
-
+```{r}
+#| label: tbl-mov.sum
+#| echo: false
+moviesSummary %>%
+  kable(
+    caption = "Summary Statistics of Movies by Genre"
+  ) %>%
+  kableExtra::kable_classic()
+```
 
 
 
