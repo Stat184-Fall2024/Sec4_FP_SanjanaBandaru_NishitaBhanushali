@@ -85,7 +85,7 @@ info <- list(
 
 moviesSummary <- relevantMovies %>%
   group_by(genre) %>%
-  summarize(across(c(revenue,runtime), info)) %>%
+  summarize(across(c(revenue,runtime,rating), info)) %>%
   select(-runtime_Count) %>%
   drop_na() %>%
   rename(count = revenue_Count) 

@@ -6,14 +6,16 @@ editor: visual
 
 ## Qualitative Research Questions
 
-1. How does genre affect voting average? - Qual
-2. How does genre affect runtime?
-3. How does genre affect revenue?
-4. What are the ratings, revenues, and runtimes across 3 popular movie franchises?
+1.  How does genre affect voting average?
+2.  How does genre affect runtime?
+3.  How does genre affect revenue?
+4.  What are the ratings, revenues, and runtimes across 3 popular movie franchises?
 
 ## Load Packages
 
 ```{r}
+#| label: lst-load.pckgs
+#| include: false
 library(janitor)
 library(knitr)
 library(kableExtra)
@@ -29,6 +31,8 @@ library(esquisse)
 ## Read in, Clean, and Wrangle Data
 
 ```{r}
+#| label: lst-data
+#| include: false
 ##Importing the Data----
 fantasyRaw <- read_csv(
   file = "~/Desktop/STAT184/fantasy.csv"
@@ -152,10 +156,11 @@ spiderSummary <- spiderMovies %>%
   rename(count = revenue_Count)
 ```
 
-
 ## Genre and Rating
 
 ```{r}
+#| label: fig-gen.rat
+#| echo: false
 ggplot(relevantMovies) +
   aes(x = rating, y = genre) +
   geom_boxplot(fill = "#A569FF") +
@@ -179,9 +184,11 @@ ggplot(relevantMovies) +
 ## Genre and Revenue
 
 ```{r}
+#| label: fig-gen.rev
+#| echo: false
 ggplot(relevantMovies) +
   aes(x = genre, y = revenue) +
-  geom_col(fill = "#4682B4") +
+  geom_bar(stat = "summary", fun = "sum", fill = "#4682B4") +
   labs(
     x = "Genre",
     y = "Revenue",
@@ -195,12 +202,13 @@ ggplot(relevantMovies) +
     axis.text.y = element_text(size = 13L),
     axis.text.x = element_text(size = 13L)
   )
-
 ```
 
 ## Genre vs Runtime
 
 ```{r}
+#| label: fig-gen.run
+#| echo: false
 ggplot(relevantMovies) +
   aes(x = runtime, y = genre) +
   geom_boxplot(fill = "#65BA65") +
@@ -209,7 +217,7 @@ ggplot(relevantMovies) +
     y = "Genres",
     title = "Runtimes vs Genres"
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(size = 20L,
     face = "bold",
@@ -217,12 +225,13 @@ ggplot(relevantMovies) +
     axis.title.y = element_text(size = 15L),
     axis.title.x = element_text(size = 15L)
   )
-
 ```
 
 ## Harry Potter Movies
 
 ```{r}
+#| label: fig-potter
+#| echo: false
 ggplot(harryPotterMovies) +
   aes(
     x = movie_name,
@@ -249,12 +258,13 @@ ggplot(harryPotterMovies) +
     axis.title.x = element_text(size = 10L),
     axis.text.x = element_text(size = 2L)
   )
-
 ```
 
 ## Pirates of the Caribbean Movies
 
 ```{r}
+#| label: fig-pirates
+#| echo: false
 ggplot(piratesMovies) +
   aes(
     x = movie_name,
@@ -283,10 +293,11 @@ ggplot(piratesMovies) +
   )
 ```
 
-
 ## Spiderman Movies
 
 ```{r}
+#| label: fig-spider
+#| echo: false
 ggplot(spiderMovies) +
   aes(
     x = movie_name,
@@ -314,5 +325,11 @@ ggplot(spiderMovies) +
     axis.text.x = element_text(size = 3L)
   )
 ```
+
+
+
+
+
+
 
 

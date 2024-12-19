@@ -11,7 +11,7 @@ execute:
 ## Introduction
 
 ```         
-  - State your research questions and explain them. (What is our goal/purpose in this project? Why did we choose these questions? What does some of the jargon mean?)
+  - State your research questions and explain them. (What is our goal/purpose in this project? Why did we choose these questions? What are each of the variables in context?)
   - Describe the provenance of your data. That is, where did you get the data, who collected the data, for what purpose, who/what make up the cases.
   - Explain how your data meet the FAIR and/or CARE Principles.
 ```
@@ -27,11 +27,11 @@ execute:
 
 ## Exploratory Data Analysis
 
+First, we wrangled and cleaned our dataset. This process was to make the data more readable and easier to analyze. Additionally, we further wrangled the movies' genres and a few movie franchises into their own data frames so we could consider them as factors in our analysis of the relationship between revenue, average rating, genre, and runtime.
+
 ### Quantitative
 
-First, we must run data wrangling and cleaning. This process is to make the data more readable and easier to analyze. Additionally, we needed to organize the genres in order to consider it as a factor in our analysis of the relationship between revenue, average rating, genre, and runtime.
-
-In our quantitative analysis process, we took several combinations of the quantitative factors in our research questions and ran visualizations and regression to understand the relationship between every possible combination.
+In our quantitative analysis process, we took several combinations of the quantitative factors in our research questions (runtime, average rating, and revenue) and ran visualizations and regression to understand the relationship between every possible combination.
 
 #### Revenue vs. Average Rating
 
@@ -55,7 +55,7 @@ ggplot(
   )
 ```
 
-This visualization depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a move will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
+This visualization depicts the relationship between runtime and average rating, which seems to have a positive and linear correlation. Most of the data is clustered towards the center of the graph because it is typical that a movie will run between a little under 100 mins to 150 mins. As a result, since a good portion of movies have that runtime, most of the movies will have a typical rating of anywhere from 5.0 to 7.5. Both of the observable medians are being described through the middle of the graph.
 
 #### Runtime vs. Average Rating
 
@@ -157,14 +157,345 @@ This final visualization is 4D, depicting the relationship between the genre, ru
 
 ### Qualitative
 
-```         
-  - Create multiple data visualizations (tables and figures) that assist both the team and readers in understanding the data.
-  - Narrative text explaining the context of the project to help the reader make sense of what is going on.
-  - What are we seeing from the graphs? What’s important? What’s significant? What does what’s being displayed mean on both specific and wide levels?   
-    - e.g. specific = definition, wide = relevance in project
-  - Explain what the clumps, trends, shapes, etc. mean
-  - Why did we use the visualizations we did?
+We also performed qualitative analyses. Our qualitative variable was genre, so we investigated how it impacted revenue, runtime, and ratings by looking at 4 popular movie genres: Action, Horror, Mystery, and Fantasy. We went on to assess how another qualitative variable, movie franchise, impacted the quantitative variables. We looked at the Harry Potter, Pirates of the Caribbean, and Spider-Man franchises to answer this question.
+
+```{r}
+#| label: lst-load.pckgs
+#| include: false
+library(janitor)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(rvest)
+library(plotly)
+library(esquisse)
 ```
+
+```{r}
+#| label: lst-data
+#| include: false
+##Importing the Data----
+fantasyRaw <- read_csv(
+  file = "~/Desktop/STAT184/fantasy.csv"
+)
+
+actionRaw <- read_csv(
+  file = "~/Desktop/STAT184/action.csv"
+)
+
+horrorRaw <- read_csv(
+  file = "~/Desktop/STAT184/horror.csv"
+)
+
+mysteryRaw <- read_csv(
+  file = "~/Desktop/STAT184/mystery.csv"
+)
+
+##Merging the Data----
+moviesRaw <- full_join(
+  x = fantasyRaw,
+  y = actionRaw
+) %>%
+  full_join(
+    y = horrorRaw
+  ) %>%
+  full_join(
+    y = mysteryRaw
+  ) 
+
+##Cleaning the Data----
+moviesCleaned <- moviesRaw %>%
+  rename(revenue = `gross(in $)`
+  ) %>%
+  dplyr:: select(-movie_id, -description, -director_id, -star_id
+  ) %>%
+  drop_na() %>%
+  filter(!grepl('19', year)) %>%
+  filter(!duplicated(movie_name)) %>%
+  mutate(runtime = readr::parse_number(runtime))
+
+##Listing Only Relevant Movies----
+relevantMovies <- moviesCleaned %>%
+  separate_wider_delim(
+    cols = genre,
+    delim = ",",
+    names = c("Genre1", "Genre2", "Genre3"),
+    too_few = "align_start"
+  ) %>%
+  pivot_longer(
+    cols = starts_with("Genre"),
+    names_to = "genreNumber",
+    values_to = "genre"
+  ) %>%
+ mutate(genre = case_match(
+   genre,
+   " Action" ~ "Action",
+   " Mystery" ~ "Mystery",
+   " Fantasy" ~ "Fantasy",
+  " Horror" ~ "Horror", 
+  .default = genre
+ )) %>%
+  drop_na() %>%
+  filter(
+    genre == "Action" | 
+    genre == "Horror" | 
+    genre == "Mystery" | 
+    genre == "Fantasy") %>%
+  select(-genreNumber)
+
+
+
+##Getting Summary Statistics----
+info <- list(
+  Count = ~as.double(n()),
+  Min = ~as.double(min(.x)),
+  Q1 = ~as.double(quantile(.x,probs = 0.25, na.rm = TRUE)),
+  Median = ~as.double(median(.x)),
+  Avg = ~as.double(mean(.x)),
+  Q3 = ~as.double(quantile(.x,probs = 0.75, na.rm = TRUE)),
+  Max = ~as.double(max(.x))
+)
+
+moviesSummary <- relevantMovies %>%
+  group_by(genre) %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+##Film Franchises----
+harryPotterMovies <- relevantMovies %>%
+  filter(grepl('Harry Potter', movie_name)) %>%
+  select(-star, -genre)
+
+harryPotterSummary <- harryPotterMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+piratesMovies <- relevantMovies  %>%
+  filter(grepl('Pirates of the Caribbean:', movie_name)) %>%
+  select(-star, -genre) %>%
+  filter(!duplicated(movie_name))
+
+piratesSummary <- piratesMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count) 
+
+spiderMovies <- relevantMovies  %>%
+  filter(grepl('Spider-Man', movie_name)) %>%
+  select(-star, -genre) %>%
+  filter(!duplicated(movie_name))
+
+spiderSummary <- spiderMovies %>%
+  summarize(across(c(revenue,runtime), info)) %>%
+  select(-runtime_Count) %>%
+  drop_na() %>%
+  rename(count = revenue_Count)
+```
+
+#### Summary Statistics of Movies by Genre
+
+This table shows the five number summaries and means of the movies’ runtimes, ratings, and revenues, grouped by genre. This supplements the following visuals to display exact values for the discussed comparisons.
+
+```{r}
+#| label: tbl-mov.sum
+#| echo: false
+moviesSummary %>%
+  kable(
+    caption = "Summary Statistics of Movies by Genre"
+  ) %>%
+  kableExtra::kable_classic()
+```
+
+#### Genre and Rating
+
+This boxplot shows how viewers’ average rating of a movie and that movie’s genre are related. We can see that the medians for each genre aren’t particularly distinct. There’s a lot of overlap between the genres, their IQRs, variations, and more hover around the same area on the graph. Horror is skewed further left than the other genres, indicating viewer’s hold generally lower opinions of horror movies, a 5.6/10.0 genre average as compared to the other’s approximately 6.0/10.0. It is also important to notice that the ‘Action’ genre has more outliers than the other genres. This could be because there are more Action movies in this data set (1525) than other genres, or it could be indicative of a trend in the genre - having some truly standout bad movies, according to viewers.
+
+```{r}
+#| label: fig-gen.rat
+#| echo: false
+ggplot(relevantMovies) +
+  aes(x = rating, y = genre) +
+  geom_boxplot(fill = "#A569FF") +
+  labs(
+    x = "Average Movie Rating",
+    y = "Genres",
+    title = "Average Rating by Genre"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L),
+    axis.text.y = element_text(size = 13L),
+    axis.text.x = element_text(size = 13L)
+  )
+```
+
+#### Genre and Revenue
+
+This bar graph shows the largest revenues from each genre, with Action being the largest of these four. Action is nearly four times as large as the next genre down, fantasy. Horror had the least revenue of these four, but it is not far below mystery. Genre clearly has an impact on movie’s revenue. Many action movies are highly anticipated and have large fanbases (Marvel, Star Wars, etc.) so this trend makes sense to see.
+
+```{r}
+#| label: fig-gen.rev
+#| echo: false
+ggplot(relevantMovies) +
+  aes(x = genre, y = revenue) +
+  geom_bar(stat = "summary", fun = "sum", fill = "#4682B4") +
+  labs(
+    x = "Genre",
+    y = "Revenue",
+    title = "Genre vs Largest Revenue"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.text.y = element_text(size = 13L),
+    axis.text.x = element_text(size = 13L)
+  )
+```
+
+#### Genre and Runtime
+
+This boxplot shows how movies’ runtimes are impacted by their genre. Action movies had the highest median run time, and horror the lowest. There is overlap between all four genres, but there are some clearer trends here. Action movies have more variability in length, and tend to be longer. Fantasy and mystery are similar in their spread, with mystery having more right skewed outliers. Horror movies have the least variability and tend to be shorter.
+
+```{r}
+#| label: fig-gen.run
+#| echo: false
+ggplot(relevantMovies) +
+  aes(x = runtime, y = genre) +
+  geom_boxplot(fill = "#65BA65") +
+  labs(
+    x = "Movie Runtimes",
+    y = "Genres",
+    title = "Runtimes vs Genres"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 15L),
+    axis.title.x = element_text(size = 15L)
+  )
+```
+
+#### Harry Potter Movies
+
+This bar graph displays different Harry Potter movies’ average viewer rating, revenue, and runtime. Chamber of Secrets is the lowest rated movie, had the second lowest revenue, and the longest runtime. Interestingly, this correlation holds when looking at the opposite ends of these scales. Deathly Hallows pt. 2 is the highest rated movie, the highest revenue, and the shortest runtime. It is important to note that these movies all have relatively similar runtimes and ratings, so these are likely not significant correlations. 
+
+```{r}
+#| label: fig-potter
+#| echo: false
+ggplot(harryPotterMovies) +
+  aes(
+    x = movie_name,
+    y = rating,
+    fill = revenue,
+    colour = runtime
+  ) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_gradient() +
+  scale_color_distiller(palette = "OrRd") +
+  labs(
+    x = "Movie Title",
+    y = "Average Movie Rating",
+    title = "Rating, Revenue, and Runtime of Harry Potter Movies",
+    fill = "Revenue",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 12L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 10L),
+    axis.title.x = element_text(size = 10L),
+    axis.text.x = element_text(size = 2L)
+  )
+```
+
+#### Pirates of the Caribbean Movies
+
+This bar graph displays different Pirates of the Caribbean movies’ viewer rating, revenue, and runtime. The first movie in the series, The Curse of the Black Pearl, is the highest rated movie in the franchise, but this doesn’t seem to positively or negatively correlate with revenue or runtime. However, the lowest rated movie, Dead Men Tell No Tales, also had the lowest revenue and the shortest runtime. This is a departure from what we saw with Harry Potter, where the best rated movie had the shortest runtime. There is also more variation in voter rating in this franchise than in Harry Potter. 
+
+```{r}
+#| label: fig-pirates
+#| echo: false
+ggplot(piratesMovies) +
+  aes(
+    x = movie_name,
+    y = rating,
+    fill = revenue,
+    colour = runtime
+  ) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_gradient() +
+  scale_color_distiller(palette = "OrRd") +
+  labs(
+    x = "Movie Title",
+    y = "Average Movie Rating",
+    title = "Rating, Revenue, and Runtime of Pirates Movies",
+    fill = "Revenue",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 13L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 10L),
+    axis.title.x = element_text(size = 10L),
+    axis.text.x = element_text(size = 3L)
+  )
+```
+
+#### Spiderman Movies
+
+This bar graph displays different Spider-Man movies’ viewer rating, revenue, and runtime. This franchise spans mediums and decades, both of which could play an important role in setting the films apart from one another in these categories. The highest rated movie is Into the Spiderverse, the only animated movie in this analysis. However, it has the lowest revenue and the shortest runtime. The lowest rated movie was Spider-Man 3, but this has no clear correlation with any other variables. This is once again a departure from trends the previous franchise had between these variables, with the exception of the relationship between Harry Potter’s highest rated movie and shortest runtime.
+
+```{r}
+#| label: fig-spider
+#| echo: false
+ggplot(spiderMovies) +
+  aes(
+    x = movie_name,
+    y = rating,
+    fill = revenue,
+    colour = runtime
+  ) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_gradient() +
+  scale_color_distiller(palette = "OrRd") +
+  labs(
+    x = "Movie Title",
+    y = "Average Movie Rating",
+    title = "Rating, Revenue, and Runtime of Spiderman Movies",
+    fill = "Revenue",
+    color = "Runtime"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 13L,
+    face = "bold",
+    hjust = 0.5),
+    axis.title.y = element_text(size = 10L),
+    axis.title.x = element_text(size = 10L),
+    axis.text.x = element_text(size = 3L)
+  )
+```
+
 
 ## Results and Conclusion
 
@@ -183,6 +514,4 @@ This final visualization is 4D, depicting the relationship between the genre, ru
 
 ## Code Appendix
 
-```         
-  - Code chunk
-```
+
